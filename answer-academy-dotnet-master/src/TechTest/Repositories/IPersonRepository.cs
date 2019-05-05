@@ -11,6 +11,6 @@ namespace TechTest.Repositories
         PersonResponse Get(int? id);
         
 
-        Person Update(Person person);
+        PersonResponse Update(int? id, PersonUpdate person);
     }
 }

@@ -12,6 +12,7 @@ export class ColourNamesValueConverter {
     // alphabetically and there should not be a trailing comma.
     //
     // Example: 'Blue, Green, Red'
+
       //colours?.join();
     return 'Todo';
   }
