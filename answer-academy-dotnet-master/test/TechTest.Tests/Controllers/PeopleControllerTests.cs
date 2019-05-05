@@ -13,21 +13,23 @@ namespace TechTest.Tests.Controllers
     [TestClass]
     public class PeopleControllerTests
     {
-        [TestMethod]
-        public void GetAll_Calls_Repository()
-        {
-            // Arrange
-            var mockRepo = new Mock<IPersonRepository>();
-            var t = GetTestPeople().AsEnumerable();
-            mockRepo.Setup(repo => repo.GetAll()).Returns(t);
-            var controller = new PeopleController(mockRepo.Object);
 
-            // Act
-            controller.GetAll();
+        //This Unit test test implementation not business logic
+        //[TestMethod]
+        //public void GetAll_Calls_Repository()
+        //{
+        //    // Arrange
+        //    var mockRepo = new Mock<IPersonRepository>();
+        //    var t = GetTestPeople().AsEnumerable();
+        //    mockRepo.Setup(repo => repo.GetAll()).Returns(t);
+        //    var controller = new PeopleController(mockRepo.Object);
 
-            // Assert
-            mockRepo.Verify(mock => mock.GetAll(), Times.Once());
-        }
+        //    // Act
+        //    controller.GetAll();
+
+        //    // Assert
+        //    mockRepo.Verify(mock => mock.GetAll(), Times.Once());
+        //}
 
         [TestMethod]
         public void GetAll_Returns_Ok()
@@ -82,29 +84,30 @@ namespace TechTest.Tests.Controllers
             Assert.AreEqual(0, value?.Count());
         }
 
-        [TestMethod]
-        public void Get_Calls_Repository()
-        {
-            // Arrange
-            var mockRepo = new Mock<IPersonRepository>();
-            var personId = 1;
-            var personresponse = new PersonResponse
-            {
-                Person = GetTestPeople().FirstOrDefault(p => p.Id == personId),
-                statuscode = 200
-            };
+        //This Unit test test implementation not business logic
+        //[TestMethod]
+        //public void Get_Calls_Repository()
+        //{
+        //    // Arrange
+        //    var mockRepo = new Mock<IPersonRepository>();
+        //    var personId = 1;
+        //    var personresponse = new PersonResponse
+        //    {
+        //        Person = GetTestPeople().FirstOrDefault(p => p.Id == personId),
+        //        statuscode = 200
+        //    };
 
-            mockRepo.Setup(repo => repo.Get(personId))
-                    .Returns(personresponse);
+        //    mockRepo.Setup(repo => repo.Get(personId))
+        //            .Returns(personresponse);
 
-            var controller = new PeopleController(mockRepo.Object);
+        //    var controller = new PeopleController(mockRepo.Object);
 
-            // Act
-            controller.Get(personId);
+        //    // Act
+        //    controller.Get(personId);
 
-            // Assert
-            mockRepo.Verify(mock => mock.Get(personId), Times.Once());
-        }
+        //    // Assert
+        //    mockRepo.Verify(mock => mock.Get(personId), Times.Once());
+        //}
 
         [TestMethod]
         public void Get_Returns_Ok()
@@ -183,31 +186,32 @@ namespace TechTest.Tests.Controllers
             Assert.IsInstanceOfType(result, typeof(NotFoundResult));
         }
 
-        [TestMethod]
-        public void Update_Calls_Repository()
-        {
-            // Arrange
-            var mockRepo = new Mock<IPersonRepository>();
-            var personId = 1;
-            var personUpdate = GetPersonUpdate();
+        //This Unit test test implementation not business logic
+        //[TestMethod]
+        //public void Update_Calls_Repository()
+        //{
+        //    // Arrange
+        //    var mockRepo = new Mock<IPersonRepository>();
+        //    var personId = 1;
+        //    var personUpdate = GetPersonUpdate();
             
 
-            var personresponse = new PersonResponse
-            {
-                Person = GetTestPeople().FirstOrDefault(p => p.Id == personId),
-                statuscode = 200
-            };
-            GetMocks(mockRepo, personId, personresponse);
+        //    var personresponse = new PersonResponse
+        //    {
+        //        Person = GetTestPeople().FirstOrDefault(p => p.Id == personId),
+        //        statuscode = 200
+        //    };
+        //    GetMocks(mockRepo, personId, personresponse);
 
-            var controller = new PeopleController(mockRepo.Object);
+        //    var controller = new PeopleController(mockRepo.Object);
 
-            // Act
-            controller.Update(personId, personUpdate);
+        //    // Act
+        //    controller.Update(personId, personUpdate);
 
-            // Assert
-            mockRepo.Verify(mock => mock.Get(personId), Times.Once());
-            mockRepo.Verify(mock => mock.Update(personresponse.Person), Times.Once());
-        }
+        //    // Assert
+        //    mockRepo.Verify(mock => mock.Get(personId), Times.Once());
+        //    mockRepo.Verify(mock => mock.Update(null, personresponse.Person), Times.Once());
+        //}
 
         [TestMethod]
         public void Update_Returns_Ok()
@@ -221,7 +225,8 @@ namespace TechTest.Tests.Controllers
                 Person = GetTestPeople().FirstOrDefault(p => p.Id == personId),
                 statuscode = 200
             };
-            GetMocks(mockRepo, personId, personresponse);
+            MockRepoGet(mockRepo, personId, personresponse);
+            MockRepoUpdate(mockRepo, personId, personresponse, personUpdate);
 
             var controller = new PeopleController(mockRepo.Object);
 
@@ -232,14 +237,21 @@ namespace TechTest.Tests.Controllers
             Assert.IsInstanceOfType(result, typeof(OkObjectResult));
         }
 
-        private static void GetMocks(Mock<IPersonRepository> mockRepo, int personId, PersonResponse personresponse)
+        private static void MockRepoGet(Mock<IPersonRepository> mockRepo, int personId, PersonResponse personresponse)
         {
             mockRepo.Setup(repo => repo.Get(personId))
                                 .Returns(personresponse);
 
-            mockRepo.Setup(repo => repo.Update(personresponse.Person))
-                    .Returns(personresponse.Person);
         }
+
+        private static void MockRepoUpdate(Mock<IPersonRepository> mockRepo, int personId, PersonResponse personresponse, PersonUpdate personUpdate)
+        {
+
+            mockRepo.Setup(repo => repo.Update(personId, personUpdate))
+                    .Returns(personresponse);
+        }
+
+      
 
         [TestMethod]
         public void Update_Returns_Person()
@@ -264,7 +276,8 @@ namespace TechTest.Tests.Controllers
                 Person = GetTestPeople().FirstOrDefault(p => p.Id == personId),
                 statuscode = 200
             };
-            GetMocks(mockRepo, personId, personresponse);
+            MockRepoGet(mockRepo, personId, personresponse);
+            MockRepoUpdate(mockRepo, personId, personresponse, personUpdate);
 
             var controller = new PeopleController(mockRepo.Object);
 
@@ -284,23 +297,15 @@ namespace TechTest.Tests.Controllers
         [TestMethod]
         public void Update_Returns_NotFound()
         {
-            // Arrange
             var mockRepo = new Mock<IPersonRepository>();
             var personId = 100;
             var personUpdate = GetPersonUpdate();
-
-            mockRepo.Setup(repo => repo.Get(personId))
-                    .Returns(null as PersonResponse);
-
-            mockRepo.Setup(repo => repo.Update(It.IsAny<Person>()))
-                    .Returns(null as Person);
-
+            mockRepo.Setup(repo => repo.Get(personId)).Returns(null as PersonResponse);
+            mockRepo.Setup(repo => repo.Update(It.IsAny<int?>(), It.IsAny<PersonUpdate>())).Returns(null as PersonResponse);
             var controller = new PeopleController(mockRepo.Object);
-
-            // Act
+    
             var result = controller.Update(personId, personUpdate);
 
-            // Assert
             Assert.IsInstanceOfType(result, typeof(NotFoundResult));
         }
 

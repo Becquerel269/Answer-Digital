@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using TechTest.Repositories.Models;
 using TechTest.Repositories.Models.Responses;
@@ -34,33 +35,54 @@ namespace TechTest.Repositories
 
             var person = this.Collection.SingleOrDefault(p => p.Id == id.Value);
 
-            return new PersonResponse {
+            return new PersonResponse
+            {
                 Person = person,
                 statuscode = person == null ? 204 : 200
 
             };
         }
 
-        public Person Update(Person person)
+        public PersonResponse Update(int? id, PersonUpdate personUpdate)
         {
-            if (person == null)
+            PersonResponse personResponse = new PersonResponse();
+
+            if (personUpdate == null || id == null || personUpdate.Colours == null)
             {
-                throw new ArgumentNullException();
+                personResponse.statuscode = 400;
+                return personResponse;
             }
 
-            var existing = this.Collection.SingleOrDefault(p => p.Id == person.Id);
-
-            if (existing != null)
+            Person existingPerson;
+            try
             {
-                this.Collection = this.Collection.Except(new List<Person> { existing }).ToList();
-                this.Collection.Add(person);
-
-                existing = person;
+                existingPerson = this.Collection.SingleOrDefault(p => p.Id == id.Value);
+            }
+            catch (Exception e)
+            {
+                //collection probably contains duplicate IDs
+                //TODO we should log this exception
+                throw;
             }
 
-            return existing;
+
+            if (existingPerson == null)
+            {
+
+                personResponse.statuscode = 204;
+                return personResponse;
+            }
+
+            existingPerson.Authorised = personUpdate.Authorised;
+            existingPerson.Colours = personUpdate.Colours;
+            existingPerson.Enabled = personUpdate.Enabled;
+
+            personResponse.Person = existingPerson;
+            personResponse.statuscode = 200;
+
+            return personResponse;
         }
-
+        //TODO pass this in as a service so I can mock it
         private static IList<Person> InMemoryCollection { get; } = new List<Person>
             {
                 new Person { Id = 1, FirstName = "Bo", LastName = "Bob", Authorised = true, Enabled = false, Colours = new List<Colour> { new Colour { Id = 1, Name = "Red" } } },

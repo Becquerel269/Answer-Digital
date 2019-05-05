@@ -49,9 +49,6 @@ namespace TechTest.Controllers
 
             var personResponse = PersonRepository.Get(id);
 
-            
-
-
             return StatusCode(personResponse.statuscode, personResponse.Person);
 
             // TODO: Step 2
@@ -63,9 +60,16 @@ namespace TechTest.Controllers
 
         }
 
+
+        //TODO include Add endpoint (post)
         [HttpPut("{id}")]
-        public IActionResult Update(int id, PersonUpdate personUpdate)
+        public IActionResult Update(int? id, [FromBody] PersonUpdate personUpdate)
         {
+           
+            var updatedPerson = PersonRepository.Update(id, personUpdate);
+
+                return StatusCode(updatedPerson.statuscode, updatedPerson.Person);
+            
 
 
             // TODO: Step 3
@@ -77,7 +81,6 @@ namespace TechTest.Controllers
             // If null is returned from the PeopleRepository then a
             // NotFound should be returned.
 
-            throw new NotImplementedException();
         }
     }
 }
